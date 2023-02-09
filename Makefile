@@ -1,6 +1,6 @@
 obj-m = hello.o
-KVERSION = $(shell uname -r)
+SRC = $(shell pwd)
 all:
-	make -C /lib/modules/$(KVERSION)/build M=$(PWD) modules
+	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) 
 modules_install:
-	make -C /lib/modules/$(KVERSION)/build M=$(PWD) 
+	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) modules_install
