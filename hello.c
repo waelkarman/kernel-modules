@@ -3,10 +3,14 @@
 #include <linux/init.h>      // included for __init and __exit macros
 #include <linux/errno.h>
 #include <linux/sched.h>
+#include <linux/fs.h>
+#include <linux/kdev_t.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Wael Karman");
 MODULE_DESCRIPTION("A Simple Hello World module");
+
+dev_t dev = MKDEV(220,0);
 
 static int param1 = 1;
 static char* param2 = "2";
@@ -16,6 +20,10 @@ module_param(param2, charp, S_IRUGO);
 
 static int __init hello_init(void)
 {
+    int res = alloc_chrdev_region(dev,0,5, "skulltest");
+    if(res == 0){
+        printk(KERN_ALERT "DEVICE DRIVER registraion success");    
+    }
     printk(KERN_ALERT "Hello world! %x %x , COMM: %s ,PID: %i \n",param1,param2,current->comm, current->pid);
     return 0;    
 }
@@ -33,6 +41,7 @@ EXPORT_SYMBOL(exp_func);
 
 static void __exit hello_cleanup(void)
 {
+    unregister_chrdev_region(dev, 5);
     printk(KERN_ALERT "Cleaning up module.\n");
 }
 
