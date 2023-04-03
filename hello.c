@@ -9,9 +9,10 @@ MODULE_AUTHOR("Wael Karman");
 MODULE_DESCRIPTION("A Simple Hello World module");
 
 static int param1 = 1;
-static int param2 = 2;
-module_param(param1, int, S_IRUGO);
-module_param(param2, int, S_IRUGO);
+static char* param2 = "2";
+module_param(param1, int, S_IRUGO); //last input is a permission parameter defined in linux/stat.h
+module_param(param2, charp, S_IRUGO);
+//can be used even the function:  module_param_array();
 
 static int __init hello_init(void)
 {
@@ -20,6 +21,15 @@ static int __init hello_init(void)
 }
 
 
+/*EXPORT A SYMBOT TO USE IT FROM APPLICATIONS AND OTHER MODULES*/
+int exp_func(int i)
+{
+    pr_info("%s:%d the value passed in is %d\n",
+            __func__, __LINE__, i);
+
+    return i;
+}
+EXPORT_SYMBOL(exp_func);
 
 static void __exit hello_cleanup(void)
 {
