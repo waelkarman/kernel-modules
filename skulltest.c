@@ -51,13 +51,40 @@ int exp_func(int i)
 EXPORT_SYMBOL(exp_func);
 
 
+loff_t skulltest_llseek(struct file *file, loff_t offset, int whence){
+    loff_t retval = -EINVAL;
+    return retval;
+}
+
+static ssize_t skulltest_read(struct file *file, char __user *buf, size_t count, loff_t *ppos){
+    ssize_t ret = 0;
+    return ret;
+}
+
+static ssize_t skulltest_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos){
+    ssize_t ret = 0;
+    return ret;
+}
+
+static long skulltest_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long __arg){
+    return 0;
+}
+
+static int skulltest_open(struct inode *inode, struct file *file){
+    return 0;
+}
+
+static int skulltest_release(struct inode *inode, struct file *file){
+    return 0;
+}
+
 
 struct file_operations skulltest_fops = {
 	.owner	 = THIS_MODULE,
 	.llseek	 = skulltest_llseek,
 	.read	 = skulltest_read,
 	.write	 = skulltest_write,
-	.ioctl   = skulltest_ioctl,
+	.compat_ioctl   = skulltest_compat_ioctl,
     .open	 = skulltest_open,
 	.release = skulltest_release,
 };
