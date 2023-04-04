@@ -10,7 +10,7 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Wael Karman");
 MODULE_DESCRIPTION("A Simple Hello World module");
 
-dev_t dev = MKDEV(220,0);
+dev_t dev;
 
 static int param1 = 1;
 static char* param2 = "2";
@@ -20,9 +20,11 @@ module_param(param2, charp, S_IRUGO);
 
 static int __init hello_init(void)
 {
-    int res = alloc_chrdev_region(dev,0,5, "skulltest");
+    int res = alloc_chrdev_region(&dev,0,5, "skulltest");
     if(res == 0){
         printk(KERN_ALERT "DEVICE DRIVER registraion success");    
+    }else{
+        printk(KERN_ALERT "REGISTRATION FAILED");
     }
     printk(KERN_ALERT "Hello world! %x %x , COMM: %s ,PID: %i \n",param1,param2,current->comm, current->pid);
     return 0;    
