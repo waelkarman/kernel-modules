@@ -1,4 +1,4 @@
-obj-m = hello.o
+obj-m = skulltest.o
 SRC = $(shell pwd)
 all:
 	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) 

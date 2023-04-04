@@ -10,15 +10,14 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Wael Karman");
 MODULE_DESCRIPTION("A Simple Hello World module");
 
-dev_t dev;
-
 static int param1 = 1;
 static char* param2 = "2";
 module_param(param1, int, S_IRUGO); //last input is a permission parameter defined in linux/stat.h
-module_param(param2, charp, S_IRUGO);
-//can be used even the function:  module_param_array();
+module_param(param2, charp, S_IRUGO); //can be used even the function:  module_param_array();
 
-static int __init hello_init(void)
+dev_t dev;
+
+static int __init skulltest_init(void)
 {
     int res = alloc_chrdev_region(&dev,0,5, "skulltest");
     if(res == 0){
@@ -26,9 +25,19 @@ static int __init hello_init(void)
     }else{
         printk(KERN_ALERT "REGISTRATION FAILED");
     }
-    printk(KERN_ALERT "Hello world! %x %x , COMM: %s ,PID: %i \n",param1,param2,current->comm, current->pid);
+    printk(KERN_ALERT "Hello world thats a skulltest! %x %x , COMM: %s ,PID: %i \n",param1,param2,current->comm, current->pid);
     return 0;    
 }
+
+static void __exit skulltest_cleanup(void)
+{
+    unregister_chrdev_region(dev, 5);
+    printk(KERN_ALERT "Cleaning up module.\n");
+}
+
+module_init(skulltest_init);
+module_exit(skulltest_cleanup);
+
 
 
 /*EXPORT A SYMBOT TO USE IT FROM APPLICATIONS AND OTHER MODULES*/
@@ -41,11 +50,14 @@ int exp_func(int i)
 }
 EXPORT_SYMBOL(exp_func);
 
-static void __exit hello_cleanup(void)
-{
-    unregister_chrdev_region(dev, 5);
-    printk(KERN_ALERT "Cleaning up module.\n");
-}
 
-module_init(hello_init);
-module_exit(hello_cleanup);
+
+struct file_operations skulltest_fops = {
+	.owner	 = THIS_MODULE,
+	.llseek	 = skulltest_llseek,
+	.read	 = skulltest_read,
+	.write	 = skulltest_write,
+	.ioctl   = skulltest_ioctl,
+    .open	 = skulltest_open,
+	.release = skulltest_release,
+};
