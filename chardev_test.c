@@ -27,7 +27,7 @@ loff_t chardev_test_llseek(struct file *file, loff_t offset, int whence){
 }
 
 static ssize_t chardev_test_read(struct file *file, char __user *buf, size_t count, loff_t *ppos){
-    ssize_t ret = 0;
+    ssize_t ret = 10;
     copy_to_user(buf, "HEY MAN YOU ARE CORRECTLY READING.",10);
     return ret;
 }
