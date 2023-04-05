@@ -6,6 +6,7 @@
 #include <linux/fs.h>
 #include <linux/kdev_t.h>
 #include <linux/cdev.h>
+#include <linux/slab.h>
 
 #define MIN_NUM_DEV_REQ 1
 
@@ -27,6 +28,7 @@ loff_t chardev_test_llseek(struct file *file, loff_t offset, int whence){
 
 static ssize_t chardev_test_read(struct file *file, char __user *buf, size_t count, loff_t *ppos){
     ssize_t ret = 0;
+    copy_to_user(buf, "HEY MAN YOU ARE CORRECTLY READING.",10);
     return ret;
 }
 
@@ -39,11 +41,13 @@ static long chardev_test_compat_ioctl(struct file *filp, unsigned int cmd, unsig
     return 0;
 }
 
-static int chardev_test_open(struct inode *inode, struct file *file){
+static int chardev_test_open(struct inode *inode, struct file *flip){
+    printk(KERN_ALERT "open device");
     return 0;
 }
 
-static int chardev_test_release(struct inode *inode, struct file *file){
+static int chardev_test_release(struct inode *inode, struct file *flip){
+    printk(KERN_ALERT "close device");
     return 0;
 }
 
