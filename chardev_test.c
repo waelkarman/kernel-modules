@@ -33,10 +33,8 @@ loff_t chardev_test_llseek(struct file *file, loff_t offset, int whence){
 static ssize_t chardev_test_read(struct file *file, char __user *buf, size_t count, loff_t *ppos){
     if((character_to_read - index) < 0){
         ssize_t ret = 0;
-        printk(KERN_ALERT "count 0 in device %d ",count);
         return ret;
     }
-    printk(KERN_ALERT "count in device %d ",count);
     copy_to_user(buf, str+index ,step);
     index = index + step;
     ssize_t ret = step;
