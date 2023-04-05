@@ -86,8 +86,7 @@ static int __init chardev_test_init(void)
     }else{
         printk(KERN_ALERT "DEVICE kernel registraion FAILED"); 
     }
-    printk(KERN_ALERT "Hello world thats a chardev_test! %x %x , COMM: %s ,PID: %i \n",param1,param2,current->comm, current->pid);
-    
+
 
     /* Create a class : appears at /sys/class */
     chardev_test_class = class_create(THIS_MODULE, "chardev_test");
@@ -95,6 +94,8 @@ static int __init chardev_test_init(void)
     device_create(chardev_test_class, NULL, dev, NULL, "chardev_test1");
     printk(KERN_ALERT "DEVICE FILE creation .. "); 
     
+
+    printk(KERN_ALERT "Hello world thats a chardev_test! %x %x , COMM: %s ,PID: %i \n",param1,param2,current->comm, current->pid);
     return 0;    
 }
 
