@@ -76,23 +76,24 @@ static int __init skulltest_init(void)
         printk(KERN_ALERT "REGISTRATION FAILED");
     }
 
+
     skulltest_cdev = cdev_alloc();
     cdev_init(skulltest_cdev, &skulltest_fops);
     int res1 = cdev_add(skulltest_cdev ,dev ,MIN_NUM_DEV_REQ);
 
-
     if(res1 == 0){
-        printk(KERN_ALERT "DEVICE FILE registration success"); 
+        printk(KERN_ALERT "DEVICE kernel registration SUCCESS"); 
     }else{
-        printk(KERN_ALERT "DEVICE FILE registraion success"); 
+        printk(KERN_ALERT "DEVICE kernel registraion FAILED"); 
     }
     printk(KERN_ALERT "Hello world thats a skulltest! %x %x , COMM: %s ,PID: %i \n",param1,param2,current->comm, current->pid);
     
+
     /* Create a class : appears at /sys/class */
     skulltest_class = class_create(THIS_MODULE, "skulltest");
     /* Create a device file in /dev */
     device_create(skulltest_class, NULL, dev, NULL, "skulltest1");
-    
+    printk(KERN_ALERT "DEVICE FILE creation .. "); 
     
     return 0;    
 }
