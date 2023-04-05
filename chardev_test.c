@@ -20,41 +20,41 @@ module_param(param2, charp, S_IRUGO); //can be used even the function:  module_p
 
 
 /*DEFINE VERBS FOR FILE OPERATIONS*/
-loff_t skulltest_llseek(struct file *file, loff_t offset, int whence){
+loff_t chardev_test_llseek(struct file *file, loff_t offset, int whence){
     loff_t retval = -EINVAL;
     return retval;
 }
 
-static ssize_t skulltest_read(struct file *file, char __user *buf, size_t count, loff_t *ppos){
+static ssize_t chardev_test_read(struct file *file, char __user *buf, size_t count, loff_t *ppos){
     ssize_t ret = 0;
     return ret;
 }
 
-static ssize_t skulltest_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos){
+static ssize_t chardev_test_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos){
     ssize_t ret = 0;
     return ret;
 }
 
-static long skulltest_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long __arg){
+static long chardev_test_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long __arg){
     return 0;
 }
 
-static int skulltest_open(struct inode *inode, struct file *file){
+static int chardev_test_open(struct inode *inode, struct file *file){
     return 0;
 }
 
-static int skulltest_release(struct inode *inode, struct file *file){
+static int chardev_test_release(struct inode *inode, struct file *file){
     return 0;
 }
 
-const struct file_operations skulltest_fops = {
+const struct file_operations chardev_test_fops = {
 	.owner	 = THIS_MODULE,
-	.llseek	 = skulltest_llseek,
-	.read	 = skulltest_read,
-	.write	 = skulltest_write,
-	.compat_ioctl   = skulltest_compat_ioctl,
-    .open	 = skulltest_open,
-	.release = skulltest_release,
+	.llseek	 = chardev_test_llseek,
+	.read	 = chardev_test_read,
+	.write	 = chardev_test_write,
+	.compat_ioctl   = chardev_test_compat_ioctl,
+    .open	 = chardev_test_open,
+	.release = chardev_test_release,
 };
 
 
@@ -62,13 +62,13 @@ const struct file_operations skulltest_fops = {
 
 
 dev_t dev;
-struct cdev* skulltest_cdev = NULL;
-struct class *skulltest_class;
+struct cdev* chardev_test_cdev = NULL;
+struct class *chardev_test_class;
 
 /*DEFINE LOADING-UNLOADING BEHAVIOUR */
-static int __init skulltest_init(void)
+static int __init chardev_test_init(void)
 {
-    int res0 = alloc_chrdev_region(&dev,0,MIN_NUM_DEV_REQ, "skulltest");
+    int res0 = alloc_chrdev_region(&dev,0,MIN_NUM_DEV_REQ, "chardev_test");
     
     if(res0 == 0){
         printk(KERN_ALERT "DEVICE DRIVER registraion success");    
@@ -77,36 +77,36 @@ static int __init skulltest_init(void)
     }
 
 
-    skulltest_cdev = cdev_alloc();
-    cdev_init(skulltest_cdev, &skulltest_fops);
-    int res1 = cdev_add(skulltest_cdev ,dev ,MIN_NUM_DEV_REQ);
+    chardev_test_cdev = cdev_alloc();
+    cdev_init(chardev_test_cdev, &chardev_test_fops);
+    int res1 = cdev_add(chardev_test_cdev ,dev ,MIN_NUM_DEV_REQ);
 
     if(res1 == 0){
         printk(KERN_ALERT "DEVICE kernel registration SUCCESS"); 
     }else{
         printk(KERN_ALERT "DEVICE kernel registraion FAILED"); 
     }
-    printk(KERN_ALERT "Hello world thats a skulltest! %x %x , COMM: %s ,PID: %i \n",param1,param2,current->comm, current->pid);
+    printk(KERN_ALERT "Hello world thats a chardev_test! %x %x , COMM: %s ,PID: %i \n",param1,param2,current->comm, current->pid);
     
 
     /* Create a class : appears at /sys/class */
-    skulltest_class = class_create(THIS_MODULE, "skulltest");
+    chardev_test_class = class_create(THIS_MODULE, "chardev_test");
     /* Create a device file in /dev */
-    device_create(skulltest_class, NULL, dev, NULL, "skulltest1");
+    device_create(chardev_test_class, NULL, dev, NULL, "chardev_test1");
     printk(KERN_ALERT "DEVICE FILE creation .. "); 
     
     return 0;    
 }
 
-static void __exit skulltest_cleanup(void)
+static void __exit chardev_test_cleanup(void)
 {
     unregister_chrdev_region(dev, 1);
-    cdev_del(skulltest_cdev);
+    cdev_del(chardev_test_cdev);
     printk(KERN_ALERT "Cleaning up module.\n");
 }
 
-module_init(skulltest_init);
-module_exit(skulltest_cleanup);
+module_init(chardev_test_init);
+module_exit(chardev_test_cleanup);
 
 
 
