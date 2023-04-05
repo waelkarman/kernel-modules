@@ -32,6 +32,7 @@ static ssize_t chardev_test_read(struct file *file, char __user *buf, size_t cou
     char* str = "HEY MAN YOU ARE CORRECTLY READING.";
     copy_to_user(buf, str+i ,1);
     character_to_read = character_to_read-1;
+    i++;
     ssize_t ret = character_to_read;
     return ret;
 }
