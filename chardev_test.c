@@ -36,7 +36,6 @@ static ssize_t chardev_test_read(struct file *file, char __user *buf, size_t cou
         return ret;
     }
     copy_to_user(buf, str+index ,step);
-    character_to_read = character_to_read-step;
     index = index + step;
     ssize_t ret = step;
     return ret;
