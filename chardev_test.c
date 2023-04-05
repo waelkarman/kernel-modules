@@ -20,7 +20,7 @@ module_param(param1, int, S_IRUGO); //last input is a permission parameter defin
 module_param(param2, charp, S_IRUGO); //can be used even the function:  module_param_array();
 
 char* str = "HEY MAN YOU ARE CORRECTLY READING.";
-int character_to_read = 35;
+int character_to_read = 34;
 int step = 1;
 int index = 0;
 
@@ -31,8 +31,9 @@ loff_t chardev_test_llseek(struct file *file, loff_t offset, int whence){
 }
 
 static ssize_t chardev_test_read(struct file *file, char __user *buf, size_t count, loff_t *ppos){
-    if((character_to_read - index) == 0){
-        return 0;
+    if((character_to_read - index) < 0){
+        ssize_t ret = 0;
+        return ret;
     }
     copy_to_user(buf, str+index ,step);
     character_to_read = character_to_read-step;
