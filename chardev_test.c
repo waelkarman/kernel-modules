@@ -26,12 +26,12 @@ int step = 1;
 int index = 0;
 
 /*DEFINE VERBS FOR FILE OPERATIONS*/
-loff_t chardev_test_llseek(struct file *file, loff_t offset, int whence){
+loff_t chardev_test_llseek(struct file *filp, loff_t offset, int whence){
     loff_t retval = -EINVAL;
     return retval;
 }
 
-static ssize_t chardev_test_read(struct file *file, char __user *buf, size_t count, loff_t *ppos){
+static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t count, loff_t *ppos){
     if((character_to_read - index) < 0){
         ssize_t ret = 0;
         return ret;
@@ -42,7 +42,7 @@ static ssize_t chardev_test_read(struct file *file, char __user *buf, size_t cou
     return ret;
 }
 
-static ssize_t chardev_test_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos){
+static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
     str0 = kmalloc(20*sizeof(char*), GFP_KERNEL);
     copy_from_user(str0,buf,20);
     printk(KERN_ALERT "RECEIVED STRING: %s\n",str0);
