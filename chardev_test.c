@@ -41,14 +41,15 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
     return ret;
 }
 
-int kbuffsize = 50
-int filledsize = 0
+int kbuffsize = 50;
+int filledsize = 0;
 
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
-    filp.private_data = kmalloc(kbuffsize*sizeof(char*), GFP_KERNEL);
-    copy_from_user(filp.private_data,buf,kbuffsize);
-    for(k=0, k++, k<kbuffsize-1){
-        if(*(filp.private_data + k) != "\0"){
+    filp->private_data = kmalloc(kbuffsize*sizeof(char*), GFP_KERNEL);
+    copy_from_user(filp->private_data,buf,kbuffsize);
+    int k=0;
+    for(k=0; k++; k<kbuffsize-1){
+        if(*((char*)filp->private_data + k) != "\0"){
             filledsize++;
         }
     }
@@ -86,7 +87,7 @@ const struct file_operations chardev_test_fops = {
 
 
 dev_t dev;  //contains the major number after dynamic allocation
-struct cdev* chardev_test_cdev = cdev_alloc(); // create a char device instance that kernel knows how to deal with  
+struct cdev* chardev_test_cdev = NULL; // create a char device instance that kernel knows how to deal with  
 struct class *chardev_test_class;
 
 /*DEFINE LOADING-UNLOADING BEHAVIOUR */
@@ -100,6 +101,7 @@ static int __init chardev_test_init(void)
         printk(KERN_ALERT "REGISTRATION Major Minor FAILED");
     }
 
+    chardev_test_cdev = cdev_alloc();
     cdev_init(chardev_test_cdev, &chardev_test_fops); //associate char device with file opertions struct
     int res1 = cdev_add(chardev_test_cdev ,dev ,MIN_NUM_DEV_REQ); // fill char device struct with the information abot major and minor
 
