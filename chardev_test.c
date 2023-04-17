@@ -20,7 +20,6 @@ module_param(param1, int, S_IRUGO); //last input is a permission parameter defin
 module_param(param2, charp, S_IRUGO); //can be used even the function:  module_param_array();
 
 char* str = "HEY MAN YOU ARE CORRECTLY READING.";
-char* str0; 
 int character_to_read = 34;
 int step = 1;
 int index = 0;
@@ -42,11 +41,19 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
     return ret;
 }
 
+int kbuffsize = 50
+int filledsize = 0
+
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
-    str0 = kmalloc(20*sizeof(char*), GFP_KERNEL);
-    copy_from_user(str0,buf,20);
-    printk(KERN_ALERT "RECEIVED STRING: %s\n",str0);
-    ssize_t ret = 20;
+    filp.private_data = kmalloc(kbuffsize*sizeof(char*), GFP_KERNEL);
+    copy_from_user(filp.private_data,buf,kbuffsize);
+    for(k=0, k++, k<kbuffsize-1){
+        if(*(filp.private_data + k) != "\0"){
+            filledsize++;
+        }
+    }
+    printk(KERN_ALERT "RECEIVED STRING: %s\n",filledsize);
+    ssize_t ret = filledsize;
     return ret;
 }
 
