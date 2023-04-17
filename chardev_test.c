@@ -46,7 +46,7 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
 
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
     int buffer_size = strlen((char*)buf);
-    
+    printk(KERN_ALERT "BUFFER SIZE:  %d\n ",buffer_size);
     filp->private_data = kmalloc(buffer_size*sizeof(char*), GFP_KERNEL);
     copy_from_user(filp->private_data,buf,buffer_size);
 
