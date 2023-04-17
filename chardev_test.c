@@ -8,6 +8,8 @@
 #include <linux/cdev.h>
 #include <linux/slab.h>
 
+#include <linux/string.h>
+
 #define MIN_NUM_DEV_REQ 1
 
 MODULE_LICENSE("GPL");
@@ -42,19 +44,15 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
 }
 
 int kbuffsize = 50;
-int filledsize = 0;
+int kfilledsize = 0;
 
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
     filp->private_data = kmalloc(kbuffsize*sizeof(char*), GFP_KERNEL);
     copy_from_user(filp->private_data,buf,kbuffsize);
-    int k=0;
-    // for(k=0; k++; k<kbuffsize-1){
-    //     if(*((char*)filp->private_data + k) != "\0"){
-    //         filledsize++;
-    //     }
-    // }
-    printk(KERN_ALERT "RECEIVED STRING: %d\n",kbuffsize);
-    ssize_t ret = kbuffsize;
+    int koffset = strlen((char*)filp->private_data);
+    kfilledsize=kfilledsize+koffset;
+    printk(KERN_ALERT "RECEIVED STRING: %d\n",kfilledsize);
+    ssize_t ret = kfilledsize;
     return ret;
 }
 
