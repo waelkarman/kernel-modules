@@ -43,16 +43,18 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
     return ret;
 }
 
-int kbuffsize = 50;
-int kfilledsize = 0;
 
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
-    filp->private_data = kmalloc(kbuffsize*sizeof(char*), GFP_KERNEL);
-    copy_from_user(filp->private_data,buf,kbuffsize);
-    int koffset = strlen((char*)filp->private_data);
-    kfilledsize=kfilledsize+koffset;
-    printk(KERN_ALERT "RECEIVED STRING: %d\n",kfilledsize);
-    ssize_t ret = kfilledsize;
+    int buffer_size = strlen((char*)buf);
+    
+    filp->private_data = kmalloc(buffer_size*sizeof(char*), GFP_KERNEL);
+    copy_from_user(filp->private_data,buf,buffer_size);
+
+    int writed_data = strlen((char*)filp->private_data);
+
+    printk(KERN_ALERT "RECEIVED STRING: %s  of character %d\n ",(char*)filp->private_data,writed_data);
+
+    ssize_t ret = writed_data;
     return ret;
 }
 
