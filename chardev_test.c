@@ -47,15 +47,13 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
     printk(KERN_ALERT "BUFFER SIZE:  %d\n ",count);
     filp->private_data = kmalloc(count*sizeof(char*), GFP_KERNEL);
+    
     copy_from_user(filp->private_data,buf,count);
 
-    int writed_data = strlen((char*)filp->private_data);
-
-    printk(KERN_ALERT "RECEIVED STRING: %s of character %d\n ",(char*)filp->private_data,writed_data);
+    printk(KERN_ALERT "RECEIVED STRING: %s of character %d\n ",(char*)filp->private_data,count);
     kfree(filp->private_data);
-    buf = NULL;
     filp->private_data = NULL;
-    ssize_t ret = writed_data;
+    ssize_t ret = count;
     *ppos += count;
     return ret;
 }
