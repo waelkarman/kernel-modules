@@ -78,7 +78,7 @@ const struct file_operations chardev_test_fops = {
 
 
 
-dev_t dev;
+dev_t dev;  //contains the major number after dynamic allocation
 struct cdev* chardev_test_cdev = NULL;
 struct class *chardev_test_class;
 
@@ -88,9 +88,9 @@ static int __init chardev_test_init(void)
     int res0 = alloc_chrdev_region(&dev,0,MIN_NUM_DEV_REQ, "chardev_test");
     
     if(res0 == 0){
-        printk(KERN_ALERT "DEVICE DRIVER registraion success");    
+        printk(KERN_ALERT "DEVICE DRIVER Major Minor registraion success");    
     }else{
-        printk(KERN_ALERT "REGISTRATION FAILED");
+        printk(KERN_ALERT "REGISTRATION Major Minor FAILED");
     }
 
 
