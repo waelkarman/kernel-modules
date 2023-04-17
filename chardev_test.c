@@ -51,6 +51,7 @@ static ssize_t chardev_test_write(struct file *filp, const char __user *buf, siz
     copy_from_user(filp->private_data,buf,count);
 
     printk(KERN_ALERT "RECEIVED STRING: %s of character %d\n ",(char*)filp->private_data,count);
+    memset(filp->private_data,0,count*sizeof(char*));
     kfree(filp->private_data);
     filp->private_data = NULL;
     ssize_t ret = count;
