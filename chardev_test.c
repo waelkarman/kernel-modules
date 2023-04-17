@@ -55,7 +55,9 @@ static ssize_t chardev_test_write(struct file *filp, const char __user *buf, siz
     printk(KERN_ALERT "RECEIVED STRING: %s of character %d\n ",(char*)filp->private_data,writed_data);
     buf = NULL;
     kfree(filp->private_data);
+    filp->private_data = NULL;
     ssize_t ret = writed_data;
+    *ppos += buffer_size;
     return ret;
 }
 
