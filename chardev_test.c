@@ -79,13 +79,13 @@ const struct file_operations chardev_test_fops = {
 
 
 dev_t dev;  //contains the major number after dynamic allocation
-struct cdev* chardev_test_cdev = NULL;
+struct cdev* chardev_test_cdev = cdev_alloc(); // create a char device instance that kernel knows how to deal with  
 struct class *chardev_test_class;
 
 /*DEFINE LOADING-UNLOADING BEHAVIOUR */
 static int __init chardev_test_init(void)
 {
-    int res0 = alloc_chrdev_region(&dev,0,MIN_NUM_DEV_REQ, "chardev_test");
+    int res0 = alloc_chrdev_region(&dev,0,MIN_NUM_DEV_REQ, "chardev_test"); // dynamically allocate major and minor number requested
     
     if(res0 == 0){
         printk(KERN_ALERT "DEVICE DRIVER Major Minor registraion success");    
@@ -93,10 +93,8 @@ static int __init chardev_test_init(void)
         printk(KERN_ALERT "REGISTRATION Major Minor FAILED");
     }
 
-
-    chardev_test_cdev = cdev_alloc();
-    cdev_init(chardev_test_cdev, &chardev_test_fops);
-    int res1 = cdev_add(chardev_test_cdev ,dev ,MIN_NUM_DEV_REQ);
+    cdev_init(chardev_test_cdev, &chardev_test_fops); //associate char device with file opertions struct
+    int res1 = cdev_add(chardev_test_cdev ,dev ,MIN_NUM_DEV_REQ); // fill char device struct with the information abot major and minor
 
     if(res1 == 0){
         printk(KERN_ALERT "DEVICE kernel registration SUCCESS"); 
@@ -104,13 +102,10 @@ static int __init chardev_test_init(void)
         printk(KERN_ALERT "DEVICE kernel registraion FAILED"); 
     }
 
-
-    /* Create a class : appears at /sys/class */
-    chardev_test_class = class_create(THIS_MODULE, "chardev_test");
-    /* Create a device file in /dev */
-    device_create(chardev_test_class, NULL, dev, NULL, "chardev_test1");
-    printk(KERN_ALERT "DEVICE FILE creation .. "); 
+    chardev_test_class = class_create(THIS_MODULE, "chardev_test"); // crete a class in /sys/class filesystem
+    device_create(chardev_test_class, NULL, dev, NULL, "chardev_test1"); // create a device file in /dev/
     
+    printk(KERN_ALERT "DEVICE FILE creation .. "); 
 
     printk(KERN_ALERT "Hello world thats a chardev_test! %x %x , COMM: %s ,PID: %i \n",param1,param2,current->comm, current->pid);
     return 0;    
