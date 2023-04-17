@@ -48,7 +48,7 @@ static ssize_t chardev_test_write(struct file *filp, const char __user *buf, siz
     printk(KERN_ALERT "BUFFER SIZE:  %d\n ",count);
     filp->private_data = kmalloc(count*sizeof(char*), GFP_KERNEL);
     
-    copy_from_user(filp->private_data,buf,count);
+    copy_from_user(filp->private_data,buf,count-1);
 
     printk(KERN_ALERT "RECEIVED STRING: %s of character %d\n ",(char*)filp->private_data,count);
     memset(filp->private_data,0,count*sizeof(char*));
