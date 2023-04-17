@@ -54,12 +54,12 @@ static long chardev_test_compat_ioctl(struct file *filp, unsigned int cmd, unsig
     return 0;
 }
 
-static int chardev_test_open(struct inode *inode, struct file *flip){
+static int chardev_test_open(struct inode *inode, struct file *filp){
     printk(KERN_ALERT "open device");
     return 0;
 }
 
-static int chardev_test_release(struct inode *inode, struct file *flip){
+static int chardev_test_release(struct inode *inode, struct file *filp){
     printk(KERN_ALERT "close device");
     return 0;
 }
