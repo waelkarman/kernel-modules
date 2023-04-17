@@ -48,13 +48,13 @@ static ssize_t chardev_test_write(struct file *filp, const char __user *buf, siz
     filp->private_data = kmalloc(kbuffsize*sizeof(char*), GFP_KERNEL);
     copy_from_user(filp->private_data,buf,kbuffsize);
     int k=0;
-    for(k=0; k++; k<kbuffsize-1){
-        if(*((char*)filp->private_data + k) != "\0"){
-            filledsize++;
-        }
-    }
-    printk(KERN_ALERT "RECEIVED STRING: %d\n",filledsize);
-    ssize_t ret = filledsize;
+    // for(k=0; k++; k<kbuffsize-1){
+    //     if(*((char*)filp->private_data + k) != "\0"){
+    //         filledsize++;
+    //     }
+    // }
+    printk(KERN_ALERT "RECEIVED STRING: %d\n",kbuffsize);
+    ssize_t ret = kbuffsize;
     return ret;
 }
 
