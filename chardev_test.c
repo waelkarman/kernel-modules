@@ -119,7 +119,7 @@ static int __init chardev_test_init(void)
     }
 
     chardev_test_class = class_create(THIS_MODULE, "chardev_test"); // crete a class in /sys/class filesystem
-    device_create(chardev_test_class, NULL, dev, NULL, "chardev_test1"); // create a device file in /dev/
+    device_create(chardev_test_class, NULL, chardev_test_cdev.dev, &dev, "chardev_classtest"); // create a device file in /dev/
     
     printk(KERN_ALERT "DEVICE FILE creation .. "); 
 
@@ -129,6 +129,8 @@ static int __init chardev_test_init(void)
 
 static void __exit chardev_test_cleanup(void)
 {
+    device_destroy(chardev_test_class, NULL, chardev_test_cdev.dev, &dev, "chardev_classtest")
+    class_destroy(chardev_test_class);
     unregister_chrdev_region(dev, 1);
     cdev_del(chardev_test_cdev);
     printk(KERN_ALERT "Cleaning up module.\n");
