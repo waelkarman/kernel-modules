@@ -43,7 +43,7 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
         buf_size = strlen(str_buf);
         copy_to_user(buf, str_buf ,buf_size);
         str_buf = NULL;
-        buf_size = 0
+        buf_size = 0;
     }
 
     *ppos = 0; // to clarify
