@@ -37,19 +37,25 @@ loff_t chardev_test_llseek(struct file *filp, loff_t offset, int whence){
 }
 
 static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t count, loff_t *ppos){
-    if((character_to_read - index) < 0){
-        ssize_t ret = 0;
-        return ret;
+    
+    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)filp->private_data,count-1,*ppos);
+    if (filp->private_data == NULL){
+        return 0;
+    }else{
+        int buf_size = strlen((char*)filp->private_data);
+        copy_to_user(buf, filp->private_data ,buf_size);
+        filp->private_data = ""
     }
-    copy_to_user(buf, str+index ,step);
-    index = index + step;
-    ssize_t ret = step;
+
+    *ppos = 0; // to clarify
+    ssize_t ret = buf_size;
     return ret;
 }
 
 
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
-    printk(KERN_ALERT "BUFFER SIZE:  %d ",count-1);
+
+    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)filp->private_data,count-1,*ppos);
     down(&mem_alloc_mutex); // semaphore lock
     
     filp->private_data = kmalloc((count)*sizeof(char*), GFP_KERNEL);
@@ -61,7 +67,7 @@ static ssize_t chardev_test_write(struct file *filp, const char __user *buf, siz
 
     up(&mem_alloc_mutex); // semaphore unlock
     ssize_t ret = count;
-    *ppos += count-1;
+    *ppos += count-1; // to clarify
     return ret;
 }
 
