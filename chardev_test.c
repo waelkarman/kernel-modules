@@ -7,18 +7,18 @@
 #include <linux/kdev_t.h>
 #include <linux/cdev.h>
 #include <linux/slab.h>
+#include <linux/semaphore.h>
 
 #include <linux/string.h>
 
-#include <asm/semaphore.h>
-
 #define MIN_NUM_DEV_REQ 1
+
+
+DEFINE_SEMAPHORE(mem_alloc_mutex);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Wael Karman");
 MODULE_DESCRIPTION("A Simple Hello World module");
-
-DECLARE_MUTEX(mem_alloc_mutex);
 
 static int param1 = 1;
 static char* param2 = "Pass a second argument.";
@@ -50,7 +50,7 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
 
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
     printk(KERN_ALERT "BUFFER SIZE:  %d\n ",count-1);
-    down(mem_alloc_mutex);
+    down(&mem_alloc_mutex);
     filp->private_data = kmalloc((count)*sizeof(char*), GFP_KERNEL);
     
     copy_from_user(filp->private_data,buf,count-1);
@@ -59,7 +59,7 @@ static ssize_t chardev_test_write(struct file *filp, const char __user *buf, siz
     memset(filp->private_data,0,count*sizeof(char*));
     kfree(filp->private_data);
     filp->private_data = NULL;
-    up(mem_alloc_mutex);
+    up(&mem_alloc_mutex);
     ssize_t ret = count;
     *ppos += count-1;
     return ret;
