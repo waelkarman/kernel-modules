@@ -50,16 +50,16 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
 
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
     printk(KERN_ALERT "BUFFER SIZE:  %d\n ",count-1);
-    down(&mem_alloc_mutex);
-    filp->private_data = kmalloc((count)*sizeof(char*), GFP_KERNEL);
+    down(&mem_alloc_mutex); // semaphore lock
     
+    filp->private_data = kmalloc((count)*sizeof(char*), GFP_KERNEL);
     copy_from_user(filp->private_data,buf,count-1);
-
     printk(KERN_ALERT "RECEIVED STRING: %s of character %d\n ",(char*)filp->private_data,count-1);
     memset(filp->private_data,0,count*sizeof(char*));
     kfree(filp->private_data);
     filp->private_data = NULL;
-    up(&mem_alloc_mutex);
+
+    up(&mem_alloc_mutex); // semaphore unlock
     ssize_t ret = count;
     *ppos += count-1;
     return ret;
