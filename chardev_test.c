@@ -26,7 +26,7 @@ module_param(param1, int, S_IRUGO); //last input is a permission parameter defin
 module_param(param2, charp, S_IRUGO); //can be used even the function:  module_param_array();
 
 int buf_size = 0;
-void* str_buff = NULL;
+char* str_buf = "Hey man you are reading fine !";
 
 /*DEFINE VERBS FOR FILE OPERATIONS*/
 loff_t chardev_test_llseek(struct file *filp, loff_t offset, int whence){
@@ -36,13 +36,14 @@ loff_t chardev_test_llseek(struct file *filp, loff_t offset, int whence){
 
 static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t count, loff_t *ppos){
     
-    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)str_buff,count,*ppos);
-    if (str_buff == NULL){
+    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)filp->private_data,count-1,*ppos);
+    if (str_buf == NULL){
         return 0;
     }else{
-        buf_size = strlen((char*)str_buff);
-        copy_to_user(buf, str_buff ,buf_size);
-        str_buff = "";
+        buf_size = strlen(str_buf);
+        copy_to_user(buf, str_buf ,buf_size);
+        str_buf = NULL;
+        buf_size = 0
     }
 
     *ppos = 0; // to clarify
@@ -53,13 +54,15 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
 
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
 
-    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)str_buff,count,*ppos);
+    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)filp->private_data,count-1,*ppos);
     down(&mem_alloc_mutex); // semaphore lock
     
-    str_buff = kmalloc((count)*sizeof(char*), GFP_KERNEL);
-    memset(str_buff,0,count*sizeof(char*));
-    copy_from_user(str_buff,buf,count-1);
-    printk(KERN_ALERT "RECEIVED STRING: %s of character %d ",(char*)str_buff,count-1);
+    filp->private_data = kmalloc((count)*sizeof(char*), GFP_KERNEL);
+    memset(filp->private_data,0,count*sizeof(char*));
+    copy_from_user(filp->private_data,buf,count-1);
+    printk(KERN_ALERT "RECEIVED STRING: %s of character %d ",(char*)filp->private_data,count-1);
+    kfree(filp->private_data);
+    filp->private_data = NULL;
 
     up(&mem_alloc_mutex); // semaphore unlock
     ssize_t ret = count;
@@ -77,8 +80,6 @@ static int chardev_test_open(struct inode *inode, struct file *filp){
 }
 
 static int chardev_test_release(struct inode *inode, struct file *filp){
-    kfree(str_buff);
-    str_buff = NULL;
     printk(KERN_ALERT "remove module");
     return 0;
 }
