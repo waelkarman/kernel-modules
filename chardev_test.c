@@ -42,12 +42,11 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
     }else{
         buf_size = strlen(str_buf);
         copy_to_user(buf, str_buf ,buf_size);
-        printk(KERN_ALERT "IN CALL: %s of character %d",str_buf,buf_size);
+        printk(KERN_ALERT "IN CALL: %s of character %d",buf,buf_size);
         str_buf = NULL;
         buf_size = 0;
     }
 
-    // *ppos = 0; // to clarify
     ssize_t ret = buf_size;
     return ret;
 }
@@ -65,8 +64,8 @@ static ssize_t chardev_test_write(struct file *filp, const char __user *buf, siz
     filp->private_data = NULL;
 
     up(&mem_alloc_mutex); // semaphore unlock
+    
     ssize_t ret = count;
-    // *ppos += count-1; // to clarify
     return ret;
 }
 
