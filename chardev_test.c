@@ -25,10 +25,7 @@ static char* param2 = "Pass a second argument.";
 module_param(param1, int, S_IRUGO); //last input is a permission parameter defined in linux/stat.h
 module_param(param2, charp, S_IRUGO); //can be used even the function:  module_param_array();
 
-char* str = "HEY MAN YOU ARE CORRECTLY READING.";
-int character_to_read = 34;
-int step = 1;
-int index = 0;
+int buf_size = 0;
 
 /*DEFINE VERBS FOR FILE OPERATIONS*/
 loff_t chardev_test_llseek(struct file *filp, loff_t offset, int whence){
@@ -42,9 +39,9 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
     if (filp->private_data == NULL){
         return 0;
     }else{
-        int buf_size = strlen((char*)filp->private_data);
+        buf_size = strlen((char*)filp->private_data);
         copy_to_user(buf, filp->private_data ,buf_size);
-        filp->private_data = ""
+        filp->private_data = "";
     }
 
     *ppos = 0; // to clarify
