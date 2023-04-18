@@ -42,6 +42,7 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
     }else{
         buf_size = strlen(str_buf);
         copy_to_user(buf, str_buf ,buf_size);
+        printk(KERN_ALERT "IN CALL: %s of character %d",str_buf,buf_size);
         str_buf = NULL;
         buf_size = 0;
     }
@@ -54,7 +55,6 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
 
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
 
-    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)filp->private_data,count-1,*ppos);
     down(&mem_alloc_mutex); // semaphore lock
     
     filp->private_data = kmalloc((count)*sizeof(char*), GFP_KERNEL);
