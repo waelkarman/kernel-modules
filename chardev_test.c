@@ -36,14 +36,12 @@ loff_t chardev_test_llseek(struct file *filp, loff_t offset, int whence){
 
 static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t count, loff_t *ppos){
     
-    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)filp->private_data,count-1,*ppos);
     if (str_buf == NULL){
         return 0;
     }else{
         buf_size = strlen(str_buf);
         copy_to_user(buf, str_buf ,buf_size);
-        printk(KERN_ALERT "IN CALL: %s of character %d",buf,buf_size);
-        str_buf = NULL;
+        // str_buf = NULL;
     }
 
     *ppos += buf_size;
