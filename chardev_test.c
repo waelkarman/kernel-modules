@@ -52,7 +52,7 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
 
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
 
-    down(&mem_alloc_mutex); // semaphore lock
+    down_interruptible(&mem_alloc_mutex); // semaphore lock
     
     filp->private_data = kmalloc((count)*sizeof(char*), GFP_KERNEL);
     memset(filp->private_data,0,count*sizeof(char*));
