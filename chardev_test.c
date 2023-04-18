@@ -35,7 +35,7 @@ loff_t chardev_test_llseek(struct file *filp, loff_t offset, int whence){
 
 static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t count, loff_t *ppos){
     
-    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)filp->private_data,count-1,*ppos);
+    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)filp->private_data,count,*ppos);
     if (filp->private_data == NULL){
         return 0;
     }else{
@@ -52,15 +52,13 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
 
 static ssize_t chardev_test_write(struct file *filp, const char __user *buf, size_t count, loff_t *ppos){
 
-    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)filp->private_data,count-1,*ppos);
+    printk(KERN_ALERT "VAUES ON CALL : %s of character %d , %lld",(char*)filp->private_data,count,*ppos);
     down(&mem_alloc_mutex); // semaphore lock
     
     filp->private_data = kmalloc((count)*sizeof(char*), GFP_KERNEL);
     memset(filp->private_data,0,count*sizeof(char*));
     copy_from_user(filp->private_data,buf,count-1);
     printk(KERN_ALERT "RECEIVED STRING: %s of character %d ",(char*)filp->private_data,count-1);
-    kfree(filp->private_data);
-    filp->private_data = NULL;
 
     up(&mem_alloc_mutex); // semaphore unlock
     ssize_t ret = count;
@@ -78,6 +76,8 @@ static int chardev_test_open(struct inode *inode, struct file *filp){
 }
 
 static int chardev_test_release(struct inode *inode, struct file *filp){
+    kfree(filp->private_data);
+    filp->private_data = NULL;
     printk(KERN_ALERT "remove module");
     return 0;
 }
