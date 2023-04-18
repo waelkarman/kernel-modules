@@ -47,6 +47,7 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
         buf_size = 0;
     }
 
+    *ppos += buf_size;
     ssize_t ret = buf_size;
     return ret;
 }
@@ -65,6 +66,7 @@ static ssize_t chardev_test_write(struct file *filp, const char __user *buf, siz
 
     up(&mem_alloc_mutex); // semaphore unlock
     
+    *ppos += count-1;
     ssize_t ret = count;
     return ret;
 }
