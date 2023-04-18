@@ -70,12 +70,12 @@ static long chardev_test_compat_ioctl(struct file *filp, unsigned int cmd, unsig
 }
 
 static int chardev_test_open(struct inode *inode, struct file *filp){
-    printk(KERN_ALERT "open device");
+    printk(KERN_ALERT "load module");
     return 0;
 }
 
 static int chardev_test_release(struct inode *inode, struct file *filp){
-    printk(KERN_ALERT "close device");
+    printk(KERN_ALERT "remove module");
     return 0;
 }
 
