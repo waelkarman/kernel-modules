@@ -44,7 +44,6 @@ static ssize_t chardev_test_read(struct file *filp, char __user *buf, size_t cou
         copy_to_user(buf, str_buf ,buf_size);
         printk(KERN_ALERT "IN CALL: %s of character %d",buf,buf_size);
         str_buf = NULL;
-        buf_size = 0;
     }
 
     *ppos += buf_size;
