@@ -14,7 +14,7 @@
 #define MIN_NUM_DEV_REQ 1
 
 
-DEFINE_SEMAPHORE(mem_alloc_mutex);
+DEFINE_SEMAPHORE(mem_alloc_mutex, 1);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Wael Karman");
@@ -121,7 +121,7 @@ static int __init chardev_test_init(void)
         printk(KERN_ALERT "DEVICE kernel registraion FAILED"); 
     }
 
-    chardev_test_class = class_create(THIS_MODULE, "chardev_test"); // crete a class in /sys/class filesystem
+    chardev_test_class = class_create( "chardev_test"); // crete a class in /sys/class filesystem
     device_create(chardev_test_class, NULL, chardev_test_cdev->dev, NULL, "chardev_classtest"); // create a device file in /dev/
     
     printk(KERN_ALERT "DEVICE FILE creation .. "); 
