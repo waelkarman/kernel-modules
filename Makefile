@@ -1,4 +1,5 @@
-obj-m = chardev_test.o
+obj-m += buffer_driver.o
+obj-m += pwm_driver.o
 
 all:
 	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) 
