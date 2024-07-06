@@ -25,25 +25,25 @@ MODULE_AUTHOR("Wael Karman");
 MODULE_DESCRIPTION("A Simple buffer as a kernel module");
 
 
-
+static size_t current_size = 0;
+static size_t current_index = 0;
 char str_buf[] = "Hey man the buffer is empty!";
-
+bool no_write = true;
 
 /*DEFINE VERBS FOR FILE OPERATIONS*/
 static ssize_t buffer_driver_read(struct file *filp, char __user *buf, size_t count, loff_t *offset){
     down_interruptible(&mtx_0); // semaphore lock
     
     ssize_t read = 0;
-
-    if (*offset == 0){
+    if (*offset == 0 && no_write){
         copy_to_user(buf, filp->private_data + *offset ,strlen(str_buf));
         *offset += strlen(str_buf);
         read = strlen(str_buf);
     }else{
         if(strlen(filp->private_data) > *offset){
-            copy_to_user(buf, filp->private_data + *offset,strlen(filp->private_data) - *offset);
-            *offset += strlen(filp->private_data) - *offset;
-            read = strlen(filp->private_data) - *offset;
+            copy_to_user(buf, filp->private_data + *offset, current_size - *offset);
+            read = current_size - *offset;
+            *offset += current_size - *offset;
         }
     }
 
@@ -55,15 +55,28 @@ static ssize_t buffer_driver_read(struct file *filp, char __user *buf, size_t co
 static ssize_t buffer_driver_write(struct file *filp, const char __user *buf, size_t count, loff_t *offset){
     down_interruptible(&mtx_0); // semaphore lock
     
+    if (*offset == 0){
+        kfree(filp->private_data);
+        filp->private_data=NULL;
+        current_size=0;
+        no_write=false;
+    }
+
     if (filp->private_data == NULL){
         filp->private_data = kmalloc((count)*sizeof(char),GFP_KERNEL);
     }else{
-        filp->private_data = krealloc(filp->private_data,(count)*sizeof(char),GFP_KERNEL);
+        for (ssize_t i = 0; i < count; i++) {
+            if (((char *)filp->private_data)[i] == '\0') {
+                ((char *)filp->private_data)[i] = ' ';
+            }
+        }
+
+        filp->private_data = krealloc(filp->private_data,current_size+(count)*sizeof(char),GFP_KERNEL);
     }
-    copy_from_user(filp->private_data,buf,count);
-    ((char *)filp->private_data)[count-1] = '\0';
-    printk(KERN_ALERT "RECEIVED STRING: %s of character %zu ",(char *)filp->private_data + *offset,count);
-    *offset += count;
+    current_size+=count;
+    copy_from_user(filp->private_data + *offset,buf,count);
+    ((char *)filp->private_data)[current_size-1] = '\0';
+    printk(KERN_ALERT "RECEIVED STRING: %s of character %zu ",(char *)filp->private_data + *offset, count);
 
     up(&mtx_0); // semaphore unlock
     
@@ -84,6 +97,8 @@ static int buffer_driver_open(struct inode *inode, struct file *filp){
     printk(KERN_ALERT "load driver");
     filp->private_data = kmalloc((strlen(str_buf))*sizeof(char), GFP_KERNEL);
     strncpy(filp->private_data, str_buf, strlen(str_buf));
+    ((char *)filp->private_data)[strlen(str_buf)-1] = '\0';
+    current_size+=strlen(str_buf);
     return 0;
 }
 
@@ -102,7 +117,7 @@ const struct file_operations buffer_driver_fops = {
 	.read	 = buffer_driver_read,
 	.write	 = buffer_driver_write,
 	.compat_ioctl   = buffer_driver_compat_ioctl,
-   	.open	 = buffer_driver_open,
+    	.open	 = buffer_driver_open,
 	.release = buffer_driver_release,
 };
 
