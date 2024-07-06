@@ -76,7 +76,7 @@ static ssize_t buffer_driver_write(struct file *filp, const char __user *buf, si
     current_size+=count;
     copy_from_user(filp->private_data + *offset,buf,count);
     ((char *)filp->private_data)[current_size-1] = '\0';
-    printk(KERN_ALERT "RECEIVED STRING: %s of character %zu ",(char *)filp->private_data + *offset, count);
+    printk(KERN_ALERT "KERNEL SPACE - received: %s of character %zu ",(char *)filp->private_data + *offset, count);
 
     up(&mtx_0); // semaphore unlock
     
@@ -94,16 +94,16 @@ static long buffer_driver_compat_ioctl(struct file *filp, unsigned int cmd, unsi
 }
 
 static int buffer_driver_open(struct inode *inode, struct file *filp){
-    printk(KERN_ALERT "load driver");
+    printk(KERN_ALERT "Load Driver");
     filp->private_data = kmalloc((strlen(str_buf))*sizeof(char), GFP_KERNEL);
     strncpy(filp->private_data, str_buf, strlen(str_buf));
-    ((char *)filp->private_data)[strlen(str_buf)-1] = '\0';
+    ((char *)filp->private_data)[strlen(str_buf)] = '\0';
     current_size+=strlen(str_buf);
     return 0;
 }
 
 static int buffer_driver_release(struct inode *inode, struct file *filp){
-    printk(KERN_ALERT "remove driver");
+    printk(KERN_ALERT "Remove Driver");
     kfree(filp->private_data);
     filp->private_data=NULL;
     return 0;
