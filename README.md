@@ -1,6 +1,6 @@
 # Custom Kernel Drivers [in development]
 Kernel modules realized for learning purpose. </br>
-This modules are integrated and could be tested in [bunch-linux](https://github.com/waelkarman/bunch-linux-manifests) project.
+Thes modules are integrated and could be tested in [bunch-linux](https://github.com/waelkarman/bunch-linux-manifests) project.
 
 Covered arguments: <br>
   - Buffer in kernel space ( [+ module-test](https://github.com/waelkarman/kernel-drivers-tests) )
