@@ -102,7 +102,7 @@ const struct file_operations buffer_driver_fops = {
 	.read	 = buffer_driver_read,
 	.write	 = buffer_driver_write,
 	.compat_ioctl   = buffer_driver_compat_ioctl,
-   	 .open	 = buffer_driver_open,
+   	.open	 = buffer_driver_open,
 	.release = buffer_driver_release,
 };
 
