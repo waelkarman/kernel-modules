@@ -17,7 +17,7 @@ Install QEMU :
 
 > sudo apt install qemu-system-x86
 
-and run tha compiled image within qemu :
+and run the compiled image within qemu :
 
 > qemu-system-x86_64 -drive file=build/tmp/deploy/images/qemux86-64/bunch-linux-basic-qemux86-64.rootfs.wic,format=raw -enable-kvm -cpu host -m 4096
 
