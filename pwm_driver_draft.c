@@ -15,28 +15,33 @@ struct pwm_clk_chip {
 
 static int pwm_clk_probe(struct platform_device *pdev)
 {
-	struct pwm_clk_chip *pcchip;
-	int ret;
 
-	pcchip = devm_kzalloc(&pdev->dev, sizeof(*pcchip), GFP_KERNEL);
-	if (!pcchip)
-		return -ENOMEM;
+    pr_err("DEVICE TREE UNDERSTANDING: FETCH NODE\n");
+	struct device_node *np;
+    np = of_find_node_by_name(NULL, "pwm1");
+    if (!np) {
+        pr_err("Failed to find node\n");
+        return -ENODEV;
+    }
 
-	pcchip->clk = devm_clk_get_prepared(&pdev->dev, NULL);
-	if (IS_ERR(pcchip->clk))
-		return dev_err_probe(&pdev->dev, PTR_ERR(pcchip->clk),
-				     "Failed to get clock\n");
+    u32 prop_value;
+    int ret;
+
+    ret = of_property_read_u32(np, "status", &prop_value);
+    if (ret) {
+        pr_err("Failed to read property\n");
+        of_node_put(np);
+        return ret;
+    }
+
+
+
 	return 0;
 }
 
 static void pwm_clk_remove(struct platform_device *pdev)
 {
-	struct pwm_clk_chip *pcchip = platform_get_drvdata(pdev);
 
-	pwmchip_remove(&pcchip->chip);
-
-	if (pcchip->clk_enabled)
-		clk_disable(pcchip->clk);
 }
 
 static struct platform_driver pwm_clk_driver = {
@@ -46,7 +51,8 @@ static struct platform_driver pwm_clk_driver = {
 	.probe = pwm_clk_probe,
 	.remove_new = pwm_clk_remove,
 };
-module_platform_driver(pwm_clk_driver);
+
+module_platform_driver(pwm-clk);
 
 MODULE_AUTHOR("Wael Karman");
 MODULE_DESCRIPTION("A Simple pwm test as a kernel module");
